@@ -1,31 +1,18 @@
--- Function to handle reinforcement spawning for Empire swordsmen when settlements with allied outposts are attacked.
-local function on_settlement_attacked(context)
-    local attacker = context:attacker()
-    local defender = context:defender()
-
-    if attacker:faction():name() == "wh_main_emp_empire" and defender:settlement():has_allied_outpost() then
-        local unit_count = 2
-        local unit_key = "wh_main_emp_inf_swordsmen"
-
-        -- Spawn the reinforcement units
-        for i = 1, unit_count do
-            local reinforcement = defender:reinforcement():add_unit(unit_key)
-            reinforcement:spawn_at_settlement(defender:settlement())
+-- Function to check if PLAYER has an outpost in the ALLIED settlement being attacked
+function checkPlayerOutpostInAlliedSettlement(alliedSettlement)
+    local playerOutposts = PLAYER:getOutposts() -- Assuming a function gets the outposts of the player
+    for _, outpost in ipairs(playerOutposts) do
+        if outpost:settlement == alliedSettlement then
+            return true
         end
     end
+    return false
 end
 
--- Register the event to trigger when a battle starts
-local function register_reinforcement_event()
-    cm:add_listener(
-        "SettlementAttackedListener",
-        "BattleStarted",
-        true,
-        function(context)
-            on_settlement_attacked(context)
-        end
-    )
+-- Function to spawn Empire swordsmen reinforcements
+function spawnEmpireReinforcements(alliedSettlement)
+    if checkPlayerOutpostInAlliedSettlement(alliedSettlement) then
+        -- Code to spawn Empire swordsmen at the allied settlement
+        spawnUnits(alliedSettlement, "Empire_Swordsmen", numberOfReinforcements)
+    end
 end
-
--- Call the registration function
-register_reinforcement_event()
